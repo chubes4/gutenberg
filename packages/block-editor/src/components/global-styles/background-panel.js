@@ -284,8 +284,16 @@ export default function BackgroundImagePanel( {
 					panelId={ panelId }
 				>
 					<BackgroundClipControl
-						value={ value }
-						onChange={ onChange }
+						value={ value?.background?.backgroundClip }
+						onChange={ ( newClip ) => {
+							onChange(
+								setImmutably(
+									value,
+									[ 'background', 'backgroundClip' ],
+									newClip
+								)
+							);
+						} }
 						settings={ settings }
 					/>
 				</ToolsPanelItem>
