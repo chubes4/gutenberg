@@ -12,6 +12,7 @@ import { getValueFromVariable } from '@wordpress/global-styles-engine';
 /**
  * Internal dependencies
  */
+import BackgroundClipControl from '../background-clip-control';
 import BackgroundImageControl from '../background-image-control';
 import { ColorPanelDropdown } from './color-panel';
 import { useColorsPerOrigin, useGradientsPerOrigin } from './hooks';
@@ -46,8 +47,9 @@ export function useHasBackgroundControl(
  * @return {boolean}        Whether site settings has activated background panel.
  */
 export function useHasBackgroundPanel( settings ) {
-	const { backgroundImage, gradient } = settings?.background || {};
-	return Platform.OS === 'web' && ( backgroundImage || gradient );
+	const { backgroundImage, gradient, backgroundClip } =
+		settings?.background || {};
+	return Platform.OS === 'web' && ( backgroundImage || gradient || backgroundClip );
 }
 
 /**
@@ -151,6 +153,14 @@ export default function BackgroundImagePanel( {
 	const showBackgroundGradientControl =
 		hasGradientColors && hasBackgroundGradientControl;
 	const showBackgroundImageControl = useHasBackgroundControl( settings );
+	const showBackgroundClipControl = useHasBackgroundControl(
+		settings,
+		'backgroundClip'
+	);
+	const resetBackgroundClip = () =>
+		onChange(
+			setImmutably( value, [ 'background', 'backgroundClip' ], undefined )
+		);
 
 	const resetAllFilter = useCallback( ( previousValue ) => {
 		return {
@@ -159,7 +169,11 @@ export default function BackgroundImagePanel( {
 		};
 	}, [] );
 
-	if ( ! showBackgroundGradientControl && ! showBackgroundImageControl ) {
+	if (
+		! showBackgroundGradientControl &&
+		! showBackgroundImageControl &&
+		! showBackgroundClipControl
+	) {
 		return null;
 	}
 
@@ -260,6 +274,21 @@ export default function BackgroundImagePanel( {
 					} }
 					panelId={ panelId }
 				/>
+			) }
+			{ showBackgroundClipControl && (
+				<ToolsPanelItem
+					hasValue={ () => !! value?.background?.backgroundClip }
+					label={ __( 'Clipping' ) }
+					onDeselect={ resetBackgroundClip }
+					isShownByDefault={ defaultControls.backgroundClip }
+					panelId={ panelId }
+				>
+					<BackgroundClipControl
+						value={ value }
+						onChange={ onChange }
+						settings={ settings }
+					/>
+				</ToolsPanelItem>
 			) }
 		</Wrapper>
 	);
