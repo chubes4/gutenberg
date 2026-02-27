@@ -116,12 +116,12 @@ const backgroundClip = {
 			rules.push(
 				{
 					selector: options.selector,
-					key: 'WebkitBackgroundClip',
+					key: '-webkit-background-clip',
 					value: 'text',
 				},
 				{
 					selector: options.selector,
-					key: 'WebkitTextFillColor',
+					key: '-webkit-text-fill-color',
 					value: 'transparent',
 				}
 			);
