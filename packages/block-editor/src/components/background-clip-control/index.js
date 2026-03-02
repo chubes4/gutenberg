@@ -17,6 +17,13 @@ import { useState } from '@wordpress/element';
  */
 import clsx from 'clsx';
 
+export const ALL_BACKGROUND_CLIP_VALUES = [
+	'border-box',
+	'padding-box',
+	'content-box',
+	'text',
+];
+
 const BACKGROUND_CLIP_OPTIONS = [
 	{
 		label: __( 'Border box' ),
@@ -95,8 +102,18 @@ function BackgroundClipToggle( { value, toggleProps } ) {
 	);
 }
 
-export default function BackgroundClipControl( { value, onChange } ) {
+export default function BackgroundClipControl( {
+	value,
+	onChange,
+	allowedValues,
+} ) {
 	const [ isOpen, setIsOpen ] = useState( false );
+
+	const options = allowedValues
+		? BACKGROUND_CLIP_OPTIONS.filter( ( opt ) =>
+				allowedValues.includes( opt.value )
+		  )
+		: BACKGROUND_CLIP_OPTIONS;
 
 	return (
 		<div
@@ -141,7 +158,7 @@ export default function BackgroundClipControl( { value, onChange } ) {
 								className="block-editor-background-clip-control__options"
 								aria-label={ __( 'Background clip' ) }
 							>
-								{ BACKGROUND_CLIP_OPTIONS.map( ( option ) => (
+								{ options.map( ( option ) => (
 									<BackgroundClipOption
 										key={ option.value }
 										label={ option.label }
