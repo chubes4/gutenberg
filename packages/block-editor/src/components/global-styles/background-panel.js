@@ -12,7 +12,9 @@ import { getValueFromVariable } from '@wordpress/global-styles-engine';
 /**
  * Internal dependencies
  */
-import BackgroundClipControl from '../background-clip-control';
+import BackgroundClipControl, {
+	ALL_BACKGROUND_CLIP_VALUES,
+} from '../background-clip-control';
 import BackgroundImageControl from '../background-image-control';
 import { ColorPanelDropdown } from './color-panel';
 import { useColorsPerOrigin, useGradientsPerOrigin } from './hooks';
@@ -153,10 +155,27 @@ export default function BackgroundImagePanel( {
 	const showBackgroundGradientControl =
 		hasGradientColors && hasBackgroundGradientControl;
 	const showBackgroundImageControl = useHasBackgroundControl( settings );
-	const showBackgroundClipControl = useHasBackgroundControl(
-		settings,
-		'backgroundClip'
-	);
+
+	const clipSetting = settings?.background?.backgroundClip;
+	let allowedClipValues = [];
+	if ( clipSetting === true ) {
+		allowedClipValues = ALL_BACKGROUND_CLIP_VALUES;
+	} else if ( Array.isArray( clipSetting ) ) {
+		allowedClipValues = clipSetting;
+	}
+	const nonTextClipValues = allowedClipValues.filter( ( v ) => v !== 'text' );
+	const showBackgroundClipControl = nonTextClipValues.length > 0;
+
+	const resetBackground = () => {
+		const { backgroundClip } = value?.background ?? {};
+		onChange(
+			setImmutably(
+				value,
+				[ 'background' ],
+				backgroundClip ? { backgroundClip } : {}
+			)
+		);
+	};
 	const resetBackgroundClip = () =>
 		onChange(
 			setImmutably( value, [ 'background', 'backgroundClip' ], undefined )
@@ -294,7 +313,7 @@ export default function BackgroundImagePanel( {
 								)
 							);
 						} }
-						settings={ settings }
+						allowedValues={ nonTextClipValues }
 					/>
 				</ToolsPanelItem>
 			) }
