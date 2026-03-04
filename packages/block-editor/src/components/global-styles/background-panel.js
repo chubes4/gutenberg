@@ -296,7 +296,10 @@ export default function BackgroundImagePanel( {
 			) }
 			{ showBackgroundClipControl && (
 				<ToolsPanelItem
-					hasValue={ () => !! value?.background?.backgroundClip }
+					hasValue={ () =>
+						!! value?.background?.backgroundClip &&
+						value.background.backgroundClip !== 'text'
+					}
 					label={ __( 'Clip' ) }
 					onDeselect={ resetBackgroundClip }
 					isShownByDefault={ defaultControls.backgroundClip }

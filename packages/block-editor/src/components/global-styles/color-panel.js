@@ -370,8 +370,16 @@ export default function ColorPanel( {
 	const showBackgroundPanel = useHasBackgroundColorPanel( settings );
 	const backgroundColor = decodeValue( inheritedValue?.color?.background );
 	const userBackgroundColor = decodeValue( value?.color?.background );
-	const gradient = decodeValue( inheritedValue?.color?.gradient );
-	const userGradient = decodeValue( value?.color?.gradient );
+	// Exclude gradient from background panel when it's being used as a text gradient.
+	const inheritedIsTextGradient =
+		inheritedValue?.background?.backgroundClip === 'text';
+	const isTextGradient = value?.background?.backgroundClip === 'text';
+	const gradient = inheritedIsTextGradient
+		? undefined
+		: decodeValue( inheritedValue?.color?.gradient );
+	const userGradient = isTextGradient
+		? undefined
+		: decodeValue( value?.color?.gradient );
 	const hasBackground = () => !! userBackgroundColor || !! userGradient;
 	const setBackgroundColor = ( newColor ) => {
 		const newValue = setImmutably(
