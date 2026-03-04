@@ -103,7 +103,13 @@ function gutenberg_render_background_support( $block_content, $block ) {
 			}
 
 			$tags->set_attribute( 'style', $updated_style );
-			$tags->add_class( 'has-background' );
+			// Skip has-background when the gradient is used as a text fill via
+			// background-clip: text, as the visual effect is on the text, not the background.
+			$is_text_gradient = isset( $block_attributes['style']['background']['backgroundClip'] )
+				&& 'text' === $block_attributes['style']['background']['backgroundClip'];
+			if ( ! $is_text_gradient ) {
+				$tags->add_class( 'has-background' );
+			}
 		}
 
 		return $tags->get_updated_html();

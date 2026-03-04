@@ -716,18 +716,13 @@ if ( ! class_exists( 'WP_Style_Engine' ) ) {
 		}
 
 		/**
-		 * Returns classnames for a gradient color value, omitting `has-background`
-		 * when the gradient is used as a text fill via `background-clip: text`.
+		 * Returns classnames for a gradient color value.
 		 *
 		 * @since 6.8.0
 		 *
 		 * @param string $style_value      The gradient style value.
 		 * @param array  $style_definition The style definition from BLOCK_STYLE_DEFINITIONS_METADATA.
-		 * @param array  $options          {
-		 *     Optional. An array of options.
-		 *
-		 *     @type bool $is_text_gradient Whether the gradient is used as a text fill. Default false.
-		 * }
+		 * @param array  $options          Optional. An array of options.
 		 *
 		 * @return string[] An array of CSS classnames.
 		 */
@@ -737,12 +732,7 @@ if ( ! class_exists( 'WP_Style_Engine' ) ) {
 				return array();
 			}
 
-			$classnames       = array();
-			$is_text_gradient = ! empty( $options['is_text_gradient'] );
-
-			if ( ! $is_text_gradient ) {
-				$classnames[] = 'has-background';
-			}
+			$classnames = array( 'has-background' );
 
 			$slug = static::get_slug_from_preset_value( $style_value, 'gradient' );
 			if ( $slug ) {

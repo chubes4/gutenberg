@@ -51,7 +51,10 @@ export function useHasBackgroundControl(
 export function useHasBackgroundPanel( settings ) {
 	const { backgroundImage, gradient, backgroundClip } =
 		settings?.background || {};
-	return Platform.OS === 'web' && ( backgroundImage || gradient || backgroundClip );
+	return (
+		Platform.OS === 'web' &&
+		( backgroundImage || gradient || backgroundClip )
+	);
 }
 
 /**
@@ -166,16 +169,6 @@ export default function BackgroundImagePanel( {
 	const nonTextClipValues = allowedClipValues.filter( ( v ) => v !== 'text' );
 	const showBackgroundClipControl = nonTextClipValues.length > 0;
 
-	const resetBackground = () => {
-		const { backgroundClip } = value?.background ?? {};
-		onChange(
-			setImmutably(
-				value,
-				[ 'background' ],
-				backgroundClip ? { backgroundClip } : {}
-			)
-		);
-	};
 	const resetBackgroundClip = () =>
 		onChange(
 			setImmutably( value, [ 'background', 'backgroundClip' ], undefined )
@@ -210,7 +203,7 @@ export default function BackgroundImagePanel( {
 			: gradientValue;
 	};
 
-	const resetBackground = () =>
+	const resetBackgroundImage = () =>
 		onChange(
 			setImmutably(
 				value,
@@ -225,10 +218,17 @@ export default function BackgroundImagePanel( {
 		);
 
 	// Get current gradient value, decoding preset slug references.
-	const currentGradient = decodeValue( value?.background?.gradient );
-	const inheritedGradient = decodeValue(
-		inheritedValue?.background?.gradient
-	);
+	// Exclude text gradients (backgroundClip: text) — they share background.gradient
+	// but are shown in the color panel's text section, not here.
+	const isTextGradient = value?.background?.backgroundClip === 'text';
+	const inheritedIsTextGradient =
+		inheritedValue?.background?.backgroundClip === 'text';
+	const currentGradient = isTextGradient
+		? undefined
+		: decodeValue( value?.background?.gradient );
+	const inheritedGradient = inheritedIsTextGradient
+		? undefined
+		: decodeValue( inheritedValue?.background?.gradient );
 
 	// Set gradient value, encoding preset matches as slug references.
 	const setGradient = ( newGradient ) => {
@@ -253,7 +253,7 @@ export default function BackgroundImagePanel( {
 				<ToolsPanelItem
 					hasValue={ () => hasBackgroundImageValue( value ) }
 					label={ __( 'Image' ) }
-					onDeselect={ resetBackground }
+					onDeselect={ resetBackgroundImage }
 					isShownByDefault={ defaultControls.backgroundImage }
 					panelId={ panelId }
 				>

@@ -484,17 +484,22 @@ export default function ColorPanel( {
 		allowedClipValues = clipSetting;
 	}
 	const showTextGradient = allowedClipValues.includes( 'text' );
-	const textGradient = decodeValue( inheritedValue?.color?.gradient );
-	const userTextGradient = decodeValue( value?.color?.gradient );
+	// Text gradient is stored at background.gradient, discriminated from a
+	// regular background gradient by backgroundClip === 'text'.
+	const textGradient = inheritedIsTextGradient
+		? decodeValue( inheritedValue?.background?.gradient )
+		: undefined;
+	const userTextGradient = isTextGradient
+		? decodeValue( value?.background?.gradient )
+		: undefined;
 	const hasTextGradientValue = () =>
 		!! userTextGradient && value?.background?.backgroundClip === 'text';
 	const setTextGradient = ( newGradient ) => {
 		let newValue = setImmutably(
 			value,
-			[ 'color', 'gradient' ],
+			[ 'background', 'gradient' ],
 			encodeGradientValue( newGradient )
 		);
-		newValue.color.background = undefined;
 		newValue = setImmutably(
 			newValue,
 			[ 'background', 'backgroundClip' ],
@@ -514,7 +519,7 @@ export default function ColorPanel( {
 		if ( hasTextGradientValue() ) {
 			newValue = setImmutably(
 				newValue,
-				[ 'color', 'gradient' ],
+				[ 'background', 'gradient' ],
 				undefined
 			);
 			newValue = setImmutably(

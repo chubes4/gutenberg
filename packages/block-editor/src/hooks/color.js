@@ -169,13 +169,10 @@ export function addSaveProps( props, blockNameOrType, attributes ) {
 
 	const serializeHasBackground =
 		shouldSerialize( 'background' ) || shouldSerialize( 'gradients' );
-	const isTextGradient = style?.background?.backgroundClip === 'text';
 	const hasBackground =
 		backgroundColor ||
 		style?.color?.background ||
-		( hasGradient &&
-			! isTextGradient &&
-			( gradient || style?.color?.gradient ) );
+		( hasGradient && ( gradient || style?.color?.gradient ) );
 
 	const newClassName = clsx( props.className, textClass, gradientClass, {
 		// Don't apply the background class if there's a custom gradient.
