@@ -355,7 +355,6 @@ function ScreenBlock( { name, variation }: ScreenBlockProps ) {
 					settings={ settings }
 					defaultControls={ {
 						backgroundImage: true,
-						backgroundClip: true,
 					} }
 					defaultValues={ BACKGROUND_BLOCK_DEFAULT_VALUES }
 				/>

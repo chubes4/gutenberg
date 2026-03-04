@@ -212,14 +212,27 @@ export default function BackgroundImagePanel( {
 			)
 		);
 
-	const resetGradient = () =>
-		onChange(
-			setImmutably( value, [ 'background', 'gradient' ], undefined )
+	const resetGradient = () => {
+		let newValue = setImmutably(
+			value,
+			[ 'background', 'gradient' ],
+			undefined
 		);
+		// If the gradient was used as a text gradient, also clear backgroundClip
+		// to avoid leaving text invisible with no gradient applied.
+		if ( value?.background?.backgroundClip === 'text' ) {
+			newValue = setImmutably(
+				newValue,
+				[ 'background', 'backgroundClip' ],
+				undefined
+			);
+		}
+		onChange( newValue );
+	};
 
 	// Get current gradient value, decoding preset slug references.
-	// Exclude text gradients (backgroundClip: text) — they share background.gradient
-	// but are shown in the color panel's text section, not here.
+	// Exclude text gradients (backgroundClip: text) — they are owned by the
+	// color panel's text section and should not appear here.
 	const isTextGradient = value?.background?.backgroundClip === 'text';
 	const inheritedIsTextGradient =
 		inheritedValue?.background?.backgroundClip === 'text';
@@ -270,7 +283,9 @@ export default function BackgroundImagePanel( {
 			{ showBackgroundGradientControl && (
 				<ColorPanelDropdown
 					label={ __( 'Gradient' ) }
-					hasValue={ () => hasBackgroundGradientValue( value ) }
+					hasValue={ () =>
+						hasBackgroundGradientValue( value ) && ! isTextGradient
+					}
 					resetValue={ resetGradient }
 					isShownByDefault={ defaultControls.gradient }
 					indicators={ [ currentGradient ] }

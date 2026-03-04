@@ -52,7 +52,6 @@ export default function BackgroundPanel() {
 			settings={ settings }
 			defaultControls={ {
 				backgroundImage: true,
-				backgroundClip: true,
 			} }
 			defaultValues={ BACKGROUND_DEFAULT_VALUES }
 		/>

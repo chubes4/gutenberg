@@ -483,7 +483,8 @@ export default function ColorPanel( {
 	} else if ( Array.isArray( clipSetting ) ) {
 		allowedClipValues = clipSetting;
 	}
-	const showTextGradient = allowedClipValues.includes( 'text' );
+	const showTextGradient =
+		allowedClipValues.includes( 'text' ) && hasBackgroundGradientSupport;
 	// Text gradient is stored at background.gradient, discriminated from a
 	// regular background gradient by backgroundClip === 'text'.
 	const textGradient = inheritedIsTextGradient
@@ -622,7 +623,11 @@ export default function ColorPanel( {
 			hasValue: () => hasTextColor() || hasTextGradientValue(),
 			resetValue: resetTextAndGradient,
 			isShownByDefault: defaultControls.text,
-			indicators: [ hasTextGradientValue() ? textGradient : textColor ],
+			indicators: [
+				hasTextGradientValue()
+					? userTextGradient ?? textGradient
+					: textColor,
+			],
 			tabs: [
 				{
 					key: 'text',
