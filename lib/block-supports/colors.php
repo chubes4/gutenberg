@@ -113,8 +113,17 @@ function gutenberg_apply_colors_support( $block_type, $block_attributes ) {
 		$color_block_styles['gradient'] = $preset_gradient_color ? $preset_gradient_color : $custom_gradient_color;
 	}
 
+	$is_text_gradient = isset( $block_attributes['style']['background']['backgroundClip'] )
+		&& 'text' === $block_attributes['style']['background']['backgroundClip'];
+
 	$attributes = array();
-	$styles     = gutenberg_style_engine_get_styles( array( 'color' => $color_block_styles ), array( 'convert_vars_to_classnames' => true ) );
+	$styles     = gutenberg_style_engine_get_styles(
+		array( 'color' => $color_block_styles ),
+		array(
+			'convert_vars_to_classnames' => true,
+			'is_text_gradient'           => $is_text_gradient,
+		)
+	);
 
 	if ( ! empty( $styles['classnames'] ) ) {
 		$attributes['class'] = $styles['classnames'];

@@ -49,6 +49,7 @@ export function getColorClassesAndStyles( attributes ) {
 
 	const gradientClass = __experimentalGetGradientClass( gradient );
 	const hasGradient = gradientClass || style?.color?.gradient;
+	const isTextGradient = style?.background?.backgroundClip === 'text';
 
 	// Determine color CSS class name list.
 	const className = clsx( textClass, gradientClass, {
@@ -58,8 +59,7 @@ export function getColorClassesAndStyles( attributes ) {
 		'has-background':
 			backgroundColor ||
 			style?.color?.background ||
-			gradient ||
-			style?.color?.gradient,
+			( ! isTextGradient && ( gradient || style?.color?.gradient ) ),
 		'has-link-color': style?.elements?.link?.color,
 	} );
 
