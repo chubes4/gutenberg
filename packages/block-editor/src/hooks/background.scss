@@ -1,4 +1,5 @@
 @use "@wordpress/base-styles/variables" as *;
+@use "@wordpress/base-styles/colors" as *;
 
 .background-block-support-panel {
 	/* Increased specificity required to remove the slot wrapper's row gap */
@@ -6,16 +7,54 @@
 		.background-block-support-panel__inner-wrapper {
 			row-gap: 0;
 		}
+
+		/**
+		 * The gradient control is the only .__item in the panel, so the base
+		 * :nth-last-child(1 of &) rule always applies bottom radii to it.
+		 * Remove those radii when clip follows below (gradient is not .last),
+		 * so the two controls form a seamless bordered group.
+		 * Increased specificity required to beat style.scss's :nth-last-child rule.
+		 */
+		.block-editor-tools-panel-color-gradient-settings__item:not(.last) {
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+		}
 	}
 
 	/**
-	 * In the color panel, the first color-gradient-settings item gets a
-	 * margin-top and border-top to separate it from the panel header. In the
-	 * background panel, the gradient control sits below the image control
-	 * and should not have this extra spacing or double border.
+	 * The gradient control is the only ToolsPanelItem in this panel, so the
+	 * base :nth-child(1 of &) rule always applies its top margin. Reset it.
+	 * When the gradient follows the image control, also remove the double
+	 * border and rounded top corners.
 	 */
-	.block-editor-tools-panel-color-gradient-settings__item:nth-child(1 of .block-editor-tools-panel-color-gradient-settings__item) {
-		margin-top: 0;
+	.block-editor-tools-panel-color-gradient-settings__item {
+		&.first {
+			margin-top: 0;
+		}
+
+		&:not(.first) {
+			margin-top: 0;
+			border-top: none;
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
+		}
+	}
+
+	/**
+	 * The clip control renders its own bordered container. When it follows the
+	 * gradient control, remove the top border and radii to avoid doubling with
+	 * the gradient's border-bottom. Restore them only when clip is the first
+	 * visible item.
+	 */
+	.block-editor-background-clip-control__container {
 		border-top: none;
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+	}
+
+	.first .block-editor-background-clip-control__container {
+		border-top: $border-width solid $gray-300;
+		border-top-left-radius: $radius-small;
+		border-top-right-radius: $radius-small;
 	}
 }
