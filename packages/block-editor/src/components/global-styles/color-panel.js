@@ -589,9 +589,20 @@ export default function ColorPanel( {
 
 	const resetAllFilter = useCallback(
 		( previousValue ) => {
+			// If a text gradient is active (background.gradient + backgroundClip:
+			// text), it is owned by this panel and must be cleared on reset all.
+			const isTextGradientSet =
+				previousValue?.background?.backgroundClip === 'text';
 			return {
 				...previousValue,
 				color: undefined,
+				...( isTextGradientSet && {
+					background: {
+						...previousValue?.background,
+						gradient: undefined,
+						backgroundClip: undefined,
+					},
+				} ),
 				elements: {
 					...previousValue?.elements,
 					link: {

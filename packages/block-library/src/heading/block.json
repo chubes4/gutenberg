@@ -38,6 +38,7 @@
 		},
 		"background": {
 			"backgroundClip": true,
+			"backgroundImage": true,
 			"gradient": true
 		},
 		"color": {

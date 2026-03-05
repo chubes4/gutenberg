@@ -22,10 +22,13 @@
 	}
 
 	/**
-	 * The gradient control is the only ToolsPanelItem in this panel, so the
-	 * base :nth-child(1 of &) rule always applies its top margin. Reset it.
-	 * When the gradient follows the image control, also remove the double
-	 * border and rounded top corners.
+	 * The gradient control is the only .__item in the panel. The base
+	 * :nth-child(1 of &) rule always applies its top margin — reset it.
+	 * Unlike the color panel where adjacent .__items share a border, the
+	 * image control above gradient is a plain ToolsPanelItem with no
+	 * border-bottom, so gradient's border-top must always be preserved as
+	 * the visual separator. Only remove the top radii when not first so
+	 * the corners align with the image control above it.
 	 */
 	.block-editor-tools-panel-color-gradient-settings__item {
 		&.first {
@@ -34,7 +37,6 @@
 
 		&:not(.first) {
 			margin-top: 0;
-			border-top: none;
 			border-top-left-radius: 0;
 			border-top-right-radius: 0;
 		}
