@@ -151,12 +151,20 @@ export default function BackgroundImagePanel( {
 	const areCustomGradientsEnabled = settings?.color?.customGradient;
 	const hasGradientColors = gradients.length > 0 || areCustomGradientsEnabled;
 
+	// Determine whether backgroundClip is currently set to text (text gradient).
+	// Used to hide the gradient control when the color panel owns that state.
+	const isTextGradient = value?.background?.backgroundClip === 'text';
+
 	const hasBackgroundGradientControl = useHasBackgroundControl(
 		settings,
 		'gradient'
 	);
+	// Hide the background gradient control when a text gradient is active.
+	// The color panel's text section owns that state; showing an empty gradient
+	// control here would confuse users. Changing the clip value away from 'text'
+	// naturally reveals this control again with the existing gradient value intact.
 	const showBackgroundGradientControl =
-		hasGradientColors && hasBackgroundGradientControl;
+		hasGradientColors && hasBackgroundGradientControl && ! isTextGradient;
 	const showBackgroundImageControl = useHasBackgroundControl( settings );
 
 	const clipSetting = settings?.background?.backgroundClip;
@@ -166,8 +174,7 @@ export default function BackgroundImagePanel( {
 	} else if ( Array.isArray( clipSetting ) ) {
 		allowedClipValues = clipSetting;
 	}
-	const nonTextClipValues = allowedClipValues.filter( ( v ) => v !== 'text' );
-	const showBackgroundClipControl = nonTextClipValues.length > 0;
+	const showBackgroundClipControl = allowedClipValues.length > 0;
 
 	const resetBackgroundClip = () =>
 		onChange(
@@ -231,9 +238,6 @@ export default function BackgroundImagePanel( {
 	};
 
 	// Get current gradient value, decoding preset slug references.
-	// Exclude text gradients (backgroundClip: text) — they are owned by the
-	// color panel's text section and should not appear here.
-	const isTextGradient = value?.background?.backgroundClip === 'text';
 	const inheritedIsTextGradient =
 		inheritedValue?.background?.backgroundClip === 'text';
 	const currentGradient = isTextGradient
@@ -311,10 +315,7 @@ export default function BackgroundImagePanel( {
 			) }
 			{ showBackgroundClipControl && (
 				<ToolsPanelItem
-					hasValue={ () =>
-						!! value?.background?.backgroundClip &&
-						value.background.backgroundClip !== 'text'
-					}
+					hasValue={ () => !! value?.background?.backgroundClip }
 					label={ __( 'Clip' ) }
 					onDeselect={ resetBackgroundClip }
 					isShownByDefault={ defaultControls.backgroundClip }
@@ -331,7 +332,7 @@ export default function BackgroundImagePanel( {
 								)
 							);
 						} }
-						allowedValues={ nonTextClipValues }
+						allowedValues={ allowedClipValues }
 					/>
 				</ToolsPanelItem>
 			) }
