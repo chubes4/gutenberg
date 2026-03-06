@@ -23,7 +23,7 @@ import { setImmutably } from '../../utils/object';
 
 const DEFAULT_CONTROLS = {
 	backgroundImage: true,
-	gradient: true,
+	gradient: false,
 };
 
 /**
@@ -152,19 +152,14 @@ export default function BackgroundImagePanel( {
 	const hasGradientColors = gradients.length > 0 || areCustomGradientsEnabled;
 
 	// Determine whether backgroundClip is currently set to text (text gradient).
-	// Used to hide the gradient control when the color panel owns that state.
 	const isTextGradient = value?.background?.backgroundClip === 'text';
 
 	const hasBackgroundGradientControl = useHasBackgroundControl(
 		settings,
 		'gradient'
 	);
-	// Hide the background gradient control when a text gradient is active.
-	// The color panel's text section owns that state; showing an empty gradient
-	// control here would confuse users. Changing the clip value away from 'text'
-	// naturally reveals this control again with the existing gradient value intact.
 	const showBackgroundGradientControl =
-		hasGradientColors && hasBackgroundGradientControl && ! isTextGradient;
+		hasGradientColors && hasBackgroundGradientControl;
 	const showBackgroundImageControl = useHasBackgroundControl( settings );
 
 	const clipSetting = settings?.background?.backgroundClip;
@@ -174,6 +169,15 @@ export default function BackgroundImagePanel( {
 	} else if ( Array.isArray( clipSetting ) ) {
 		allowedClipValues = clipSetting;
 	}
+	// When text gradient support is active (the color panel's text section
+	// handles setting backgroundClip to 'text'), exclude 'text' from the
+	// background panel's clip control. This avoids shared-state confusion
+	// between the two panels.
+	const hasTextGradientSupport =
+		allowedClipValues.includes( 'text' ) && hasBackgroundGradientControl;
+	if ( hasTextGradientSupport ) {
+		allowedClipValues = allowedClipValues.filter( ( v ) => v !== 'text' );
+	}
 	const showBackgroundClipControl = allowedClipValues.length > 0;
 
 	const resetBackgroundClip = () =>
@@ -182,9 +186,23 @@ export default function BackgroundImagePanel( {
 		);
 
 	const resetAllFilter = useCallback( ( previousValue ) => {
+		const prevClip = previousValue?.background?.backgroundClip;
+		const isTextGrad = prevClip === 'text';
+
 		return {
 			...previousValue,
-			background: {},
+			background: {
+				// When a text gradient is active, the color panel owns
+				// gradient and backgroundClip. Preserve them here so the
+				// background panel's "Reset all" only clears background-
+				// panel values (image, size, position, etc.).
+				...( isTextGrad
+					? {
+							gradient: previousValue?.background?.gradient,
+							backgroundClip: prevClip,
+					  }
+					: {} ),
+			},
 		};
 	}, [] );
 
@@ -238,14 +256,10 @@ export default function BackgroundImagePanel( {
 	};
 
 	// Get current gradient value, decoding preset slug references.
-	const inheritedIsTextGradient =
-		inheritedValue?.background?.backgroundClip === 'text';
-	const currentGradient = isTextGradient
-		? undefined
-		: decodeValue( value?.background?.gradient );
-	const inheritedGradient = inheritedIsTextGradient
-		? undefined
-		: decodeValue( inheritedValue?.background?.gradient );
+	const currentGradient = decodeValue( value?.background?.gradient );
+	const inheritedGradient = decodeValue(
+		inheritedValue?.background?.gradient
+	);
 
 	// Set gradient value, encoding preset matches as slug references.
 	const setGradient = ( newGradient ) => {
@@ -318,7 +332,10 @@ export default function BackgroundImagePanel( {
 			{ showBackgroundClipControl && (
 				<ToolsPanelItem
 					className="block-editor-background-panel__item"
-					hasValue={ () => !! value?.background?.backgroundClip }
+					hasValue={ () =>
+						!! value?.background?.backgroundClip &&
+						value?.background?.backgroundClip !== 'text'
+					}
 					label={ __( 'Clip' ) }
 					onDeselect={ resetBackgroundClip }
 					isShownByDefault={ defaultControls.backgroundClip }

@@ -50,9 +50,6 @@ export default function BackgroundPanel() {
 			value={ style }
 			onChange={ setStyle }
 			settings={ settings }
-			defaultControls={ {
-				backgroundImage: true,
-			} }
 			defaultValues={ BACKGROUND_DEFAULT_VALUES }
 		/>
 	);
