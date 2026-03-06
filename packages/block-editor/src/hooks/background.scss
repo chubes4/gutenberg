@@ -1,62 +1,45 @@
 @use "@wordpress/base-styles/variables" as *;
 @use "@wordpress/base-styles/colors" as *;
 
+/**
+ * ItemGroup-like border styles for the background panel's ToolsPanelItems.
+ * Replicates the separated border of the `ItemGroup` component while
+ * allowing for hidden placeholder items (same approach as the color panel).
+ */
+.block-editor-background-panel__item {
+	padding: 0;
+	max-width: 100%;
+	position: relative;
+
+	// Border styles.
+	border-left: 1px solid $gray-300;
+	border-right: 1px solid $gray-300;
+	border-bottom: 1px solid $gray-300;
+
+	// Identify the first visible instance as placeholder items will not have this class.
+	&:nth-child(1 of &) {
+		border-top-left-radius: $radius-small;
+		border-top-right-radius: $radius-small;
+		border-top: 1px solid $gray-300;
+	}
+
+	// Identify the last visible instance as placeholder items will not have this class.
+	&:nth-last-child(1 of &) {
+		border-bottom-left-radius: $radius-small;
+		border-bottom-right-radius: $radius-small;
+	}
+
+	> div,
+	> div > button {
+		border-radius: inherit;
+	}
+}
+
 .background-block-support-panel {
 	/* Increased specificity required to remove the slot wrapper's row gap */
 	&#{&} {
 		.background-block-support-panel__inner-wrapper {
 			row-gap: 0;
 		}
-
-		/**
-		 * The gradient control is the only .__item in the panel, so the base
-		 * :nth-last-child(1 of &) rule always applies bottom radii to it.
-		 * Remove those radii when clip follows below (gradient is not .last),
-		 * so the two controls form a seamless bordered group.
-		 * Increased specificity required to beat style.scss's :nth-last-child rule.
-		 */
-		.block-editor-tools-panel-color-gradient-settings__item:not(.last) {
-			border-bottom-left-radius: 0;
-			border-bottom-right-radius: 0;
-		}
-	}
-
-	/**
-	 * The gradient control is the only .__item in the panel. The base
-	 * :nth-child(1 of &) rule always applies its top margin — reset it.
-	 * Unlike the color panel where adjacent .__items share a border, the
-	 * image control above gradient is a plain ToolsPanelItem with no
-	 * border-bottom, so gradient's border-top must always be preserved as
-	 * the visual separator. Only remove the top radii when not first so
-	 * the corners align with the image control above it.
-	 */
-	.block-editor-tools-panel-color-gradient-settings__item {
-		&.first {
-			margin-top: 0;
-		}
-
-		&:not(.first) {
-			margin-top: 0;
-			border-top-left-radius: 0;
-			border-top-right-radius: 0;
-		}
-	}
-
-	/**
-	 * The clip control renders its own bordered container. When it follows the
-	 * gradient control, remove the top border and radii to avoid doubling with
-	 * the gradient's border-bottom. Restore them only when clip is the first
-	 * visible item.
-	 */
-	.block-editor-background-clip-control__container {
-		border-top: none;
-		border-top-left-radius: 0;
-		border-top-right-radius: 0;
-	}
-
-	.first .block-editor-background-clip-control__container {
-		border-top: $border-width solid $gray-300;
-		border-top-left-radius: $radius-small;
-		border-top-right-radius: $radius-small;
 	}
 }

@@ -268,6 +268,7 @@ export default function BackgroundImagePanel( {
 		>
 			{ showBackgroundImageControl && (
 				<ToolsPanelItem
+					className="block-editor-background-panel__item"
 					hasValue={ () => hasBackgroundImageValue( value ) }
 					label={ __( 'Image' ) }
 					onDeselect={ resetBackgroundImage }
@@ -286,6 +287,7 @@ export default function BackgroundImagePanel( {
 			) }
 			{ showBackgroundGradientControl && (
 				<ColorPanelDropdown
+					className="block-editor-background-panel__item"
 					label={ __( 'Gradient' ) }
 					hasValue={ () =>
 						hasBackgroundGradientValue( value ) && ! isTextGradient
@@ -315,6 +317,7 @@ export default function BackgroundImagePanel( {
 			) }
 			{ showBackgroundClipControl && (
 				<ToolsPanelItem
+					className="block-editor-background-panel__item"
 					hasValue={ () => !! value?.background?.backgroundClip }
 					label={ __( 'Clip' ) }
 					onDeselect={ resetBackgroundClip }

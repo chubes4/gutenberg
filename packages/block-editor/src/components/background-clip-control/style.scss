@@ -2,10 +2,6 @@
 @use "@wordpress/base-styles/colors" as *;
 
 .block-editor-background-clip-control__container {
-	border: $border-width solid $gray-300;
-	border-radius: $radius-small;
-	// Full width. ToolsPanel lays out children in a grid.
-	grid-column: 1 / -1;
 	position: relative;
 
 	&.is-open {
